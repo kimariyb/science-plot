@@ -1,0 +1,4 @@
+pandas~=1.4.3
+proplot~=0.9.5
+matplotlib~=3.4.3
+numpy~=1.23.0

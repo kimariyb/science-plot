@@ -1,6 +1,6 @@
 import pandas as pd
 import proplot as pplt
-import matplotlib.pyplot as plt
+import matplotlib.pyplot
 
 from proplot import rc
 
@@ -23,7 +23,7 @@ rc['xtick.major.size'] = 4.6
 rc['xtick.minor.size'] = 2.5
 
 # 创建实例
-fig, ax = pplt.subplots(figsize=(5.4*0.9,4*0.9), dpi=300)
+fig, ax = pplt.subplots(figsize=(5.4 * 0.9, 4 * 0.9), dpi=300)
 
 colors = ['off yellow', 'cherry red', 'true blue']
 
@@ -40,12 +40,12 @@ axhline = ax.axhline(y=0, color='black', linewidth=1.2)
 axhline.set_zorder(0)
 
 # 设置图例
-ax.legend(loc='best', ncols=1, fontweight='bold', fontsize='12.5', frame=False, bbox_to_anchor=(0.95,0.96))
+ax.legend(loc='best', ncols=1, fontweight='bold', fontsize='12.5', frame=False, bbox_to_anchor=(0.95, 0.96))
 
 # 格式化图像
 fig.format(
     grid=False, ylabel='Shielding (in ppm)', xlabel='Position (in Å)',
-    xlim=(-10,10), xminorlocator=1, xlocator=2, ylim=(-30,40), yminorlocator=5, ylocator=10
+    xlim=(-10, 10), xminorlocator=1, xlocator=2, ylim=(-30, 40), yminorlocator=5, ylocator=10
 )
 
 # 保存图像
