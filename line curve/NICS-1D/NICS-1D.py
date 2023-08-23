@@ -24,7 +24,7 @@ rc['xtick.minor.size'] = 2.5
 
 # 创建实例
 fig, ax = pplt.subplots(figsize=(5.4 * 0.9, 4 * 0.9), dpi=300)
-
+# 颜色 list
 colors = ['off yellow', 'cherry red', 'true blue']
 
 # 绘制整体贡献的 NICS 曲线
