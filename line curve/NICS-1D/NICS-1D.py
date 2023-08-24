@@ -1,6 +1,5 @@
 import pandas as pd
 import proplot as pplt
-import matplotlib.pyplot
 
 from proplot import rc
 
@@ -24,7 +23,7 @@ rc['xtick.minor.size'] = 2.5
 
 # 创建实例
 fig, ax = pplt.subplots(figsize=(5.4 * 0.9, 4 * 0.9), dpi=300)
-# 颜色 list
+# 颜色 list，可以修改自己喜欢的颜色
 colors = ['off yellow', 'cherry red', 'true blue']
 
 # 绘制整体贡献的 NICS 曲线
@@ -35,9 +34,9 @@ ax.plot(nics_sigma.iloc[:, -2], nics_sigma.iloc[:, -1], label='sigma', linewidth
 ax.plot(nics_pi.iloc[:, -2], nics_pi.iloc[:, -1], label='pi', linewidth=1.2, color=colors[2])
 
 # 在 y=0 处绘制一条虚线
-axhline = ax.axhline(y=0, color='black', linewidth=1.2)
+ax_line = ax.axhline(y=0, color='black', linewidth=1.2)
 # 设置为最底层
-axhline.set_zorder(0)
+ax_line.set_zorder(0)
 
 # 设置图例
 ax.legend(loc='best', ncols=1, fontweight='bold', fontsize='12.5', frame=False, bbox_to_anchor=(0.95, 0.96))
