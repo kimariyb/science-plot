@@ -18,6 +18,20 @@ rc['ytick.minor.size'] = 2.5
 rc['xtick.major.size'] = 4.6
 rc['xtick.minor.size'] = 2.5
 
+# 全局颜色，默认为 rainbow，可以自行修改成十六进制 list
+COLORS = "rainbow"
+# 如果 COLORS = 'rainbow' 则将彩虹色赋值
+if COLORS == "rainbow":
+    # 默认为彩虹色
+    # 红 #FF0000
+    # 橙 #FF7F00
+    # 黄 #FFFF00
+    # 绿 #00FF00
+    # 青 #00FFFF
+    # 蓝 #0000FF
+    # 紫 #8B00FF
+    COLORS = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#00FFFF', '#0000FF', '#8B00FF']
+
 
 def calculate_deltas(pH, n, K):
     """
@@ -74,10 +88,10 @@ def plot_distribution_curve(n, K):
     # color_list = ['填你想要的颜色']
     # for i in range(n + 1):
     #     ax.plot(pH_range, normalized_distributions[i, :], label=f'δ{n}({i + 1})', color=color_list[i])
-
+    global COLORS
     # 绘制分布曲线
     for i in range(n + 1):
-        ax.plot(pH_range, normalized_distributions[i, :], label=f'δ{n}({i + 1})', linewidth=1.3)
+        ax.plot(pH_range, normalized_distributions[i, :], label=f'δ{n}({i + 1})', linewidth=1.3, color=COLORS[i])
 
     # 设置图例
     ax.legend(loc='ur', ncols=1, fontweight='bold', fontsize='12.5', frame=True)
