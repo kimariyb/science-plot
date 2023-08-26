@@ -19,31 +19,79 @@ rc['xtick.major.size'] = 4.6
 rc['xtick.minor.size'] = 2.5
 
 
-def sum_function(k_list, pH):
+def calculate_deltas(pH, n, K):
     """
-    该方法实现了通过 K、pH 求解化学平衡分布分数 delta 的具体值
-    :param k_list: 由解离平衡常数组成的 list
-    :param pH: pH 值
-    :return: 根据 pH 和 K_list 得到 delta
+    计算 n 元弱酸的分布分数 delta
+    :param pH: 体系的 pH 值
+    :param n: n 元弱酸
+    :param K: 解离平衡常数 K
+    :return: 返回分布分数 delta
     """
-    # 初始化求和系数 S(x)
-    F_sum = 0
-    # 首先得到所有解离平衡常数 list 的长度 k_num，根据 k_num 推断所需要计算的 delta 存在几元解离平衡
-    k_num = len(k_list)
-    # 外部循环，对应最外的累加符号，也就是从 i=0 开始到 i=x 累加，x 为 1，2，3...等正整数，实际上等于 x = k_num + 1
-    for i in range(0, k_num + 1):
-        # 初始化 K 项
-        K_item = 1
-        # 计算 C^{x-i} 项的值 C_item
-        C_item = pH ** (k_num + 1 - i)
-        # 内部循环，对应内部的累乘符号，也就是从 j=1 开始到 j=i 累乘，如果 i=0 就省去这一项
-        for j in range(1, i):
-            # 计算 prod{K_j} 项的值 K_item
-            K_item *= k_list[j - 1]
-        # 将每一项都累加起来得到最终的 S(x)
-        F_sum += C_item * K_item
+    # 将 pH 转换为氢离子浓度 C
+    C = 10 ** (-pH)
 
-    return F_sum
+    # 首先计算 S(n)，因为所有的分布分数的结果
+    S = np.sum([(C ** ((n + 1) - i)) * np.prod(K[:i - 1]) for i in range(1, n + 1)])
+
+    # 计算 F(n, i)
+    F = np.zeros(n + 1)
+    for i in range(n + 1):
+        F[i] = (C ** (n - i)) * np.prod(K[:i])
+
+    # 计算归一化的分布分数
+    distributions = F / S
+
+    return distributions
+
+
+def plot_distribution_curve(n, K):
+    """
+    绘制分布分数-pH曲线图
+    :param n: n 元弱酸
+    :param K: 解离平衡常数 K
+    """
+    # 设置需要绘制的 pH 的范围为 0 ~ 14
+    pH_range = np.linspace(0, 14, 500)
+    # 初始化 distributions
+    distributions = np.zeros((n + 1, len(pH_range)))
+
+    # 计算每个 pH 值对应的分布分数
+    for i, pH in enumerate(pH_range):
+        distributions[:, i] = calculate_deltas(pH, n, K)
+
+    # 归一化分布分数
+    sum_distribution = np.sum(distributions, axis=0)
+    normalized_distributions = distributions / sum_distribution
+
+    # 创建实例
+    fig, ax = pplt.subplots(figsize=(5.4 * 0.9, 4 * 0.9), dpi=300)
+
+    # 如果想设置其他颜色循环可以使用 cycle 参数
+    # for i in range(n + 1):
+    #     ax.plot(pH_range, normalized_distributions[i, :], label=f'δ{n}({i + 1})', cycle='bmh')
+    # 或者直接用 pplt.rc.cycle = '538' 调整 cycle 参数
+    # 如果想使用自定义颜色可以使用 color 参数
+    # color_list = ['填你想要的颜色']
+    # for i in range(n + 1):
+    #     ax.plot(pH_range, normalized_distributions[i, :], label=f'δ{n}({i + 1})', color=color_list[i])
+
+    # 绘制分布曲线
+    for i in range(n + 1):
+        ax.plot(pH_range, normalized_distributions[i, :], label=f'δ{n}({i + 1})', linewidth=1.3)
+
+    # 设置图例
+    ax.legend(loc='ur', ncols=1, fontweight='bold', fontsize='12.5', frame=True)
+
+    # 格式化图像
+    fig.format(
+        grid=False, ylabel='Fraction', xlabel='pH Values',
+        xlim=(0, 14), xminorlocator=1, xlocator=2, ylim=(0, 1), yminorlocator=0.1, ylocator=0.2
+    )
+
+    # 显示图像
+    fig.show()
+
+    return fig, ax
 
 
 # 读取 equilibrium.toml 中的数据
@@ -51,59 +99,10 @@ equilibrium = toml.load("equilibrium.toml")
 # 将每一个 K 的 value 记录到一个  list K_values 中
 K_values = [item['value'] for item in equilibrium.get("K")]
 
-# 设置 pH 的范围
-ph_values = np.linspace(0, 14, 100)
-
-# 新建一个 numpy 数组用来存放不同 pH 下的数据
-sum_list = np.array([])
-# 根据 pH 得到 delta 的分母
-for ph_value in ph_values:
-    sum_list = np.append(sum_list, sum_function(k_list=K_values, pH=ph_value))
-
-# 计算每一个组分的分布分数。如果是一个二元弱酸，则有 3 种组分，三个分布分数 delta，
-# 需要使用一个 [[nparray1],[nparray2],[nparray3]] 集合保存，以此类推
-# 初始化一个空集合 delta_list 用来存放不同 delta 对应的 values
-delta_list = []
-# 循环 pH 数据以及 sum 数据
-for ph_value, sum_value in zip(ph_values, sum_list):
-    # 用于存放同一个 i 中的所有 delta
-    delta_i = np.array([])
-    for i in range(0, len(K_values) + 1):
-        # 初始化 product
-        product = 1
-        for j in range(1, i):
-            product *= K_values[j - 1]
-        # 分子除以分母得到 delta
-        F_x = ph_value ** (len(K_values) + 1 - i) * product
-        delta = F_x / sum_value
-        # 将同一个 i 中的所有 delta 存放在一个 numpy array 中
-        delta_i = np.append(delta_i, delta)
-
-    print(delta_i)
-
-"""
-# 计算分布分数 delta 值
-delta_values = None
-
-# 创建实例
-fig, ax = pplt.subplots(figsize=(5.4 * 0.9, 4 * 0.9), dpi=300)
-
-# 绘制每一个组分下对应的曲线
-for delta_value in delta_values:
-    ax.plot(ph_values, delta_value)
-
-# 设置图例
-ax.legend(loc='best', ncols=1, fontweight='bold', fontsize='12.5', frame=False, bbox_to_anchor=(0.95, 0.96))
-
-# 格式化图像
-fig.format(
-    grid=False, ylabel='Fraction', xlabel='pH Values',
-    xlim=(0, 14), xminorlocator=1, xlocator=2, ylim=(0, 1), yminorlocator=0.1, ylocator=0.2
-)
-
-# 显示图像
-fig.show()
+# 根据 K_values list 拿到 n
+acid_num = len(K_values)
+# 绘制图像
+fig, ax = plot_distribution_curve(acid_num, K_values)
 
 # 保存图像
-# fig.savefig("NICS.png", dpi=400, bbox_inches="tight")
-"""
+fig.savefig("delta.png", dpi=400, bbox_inches="tight")
