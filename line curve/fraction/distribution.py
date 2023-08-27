@@ -18,7 +18,7 @@ rc['ytick.minor.size'] = 2.5
 rc['xtick.major.size'] = 4.6
 rc['xtick.minor.size'] = 2.5
 
-# 全局颜色，默认为 rainbow，可以自行修改成十六进制 list
+# 全局颜色，默认为 rainbow，可以自行修改成十六进制 list，例如 ['', '', '', '']
 COLORS = "rainbow"
 # 如果 COLORS = 'rainbow' 则将彩虹色赋值
 if COLORS == "rainbow":
@@ -85,9 +85,11 @@ def plot_distribution_curve(n, K):
     #     ax.plot(pH_range, normalized_distributions[i, :], label=f'δ{n}({i + 1})', cycle='bmh')
     # 或者直接用 pplt.rc.cycle = '538' 调整 cycle 参数
     # 如果想使用自定义颜色可以使用 color 参数
-    # color_list = ['填你想要的颜色']
+    # color_list = ['', '', '', '']
     # for i in range(n + 1):
     #     ax.plot(pH_range, normalized_distributions[i, :], label=f'δ{n}({i + 1})', color=color_list[i])
+
+    # 声明全局变量 COLORS，如果不需要这个颜色，可以直接 # 注释掉
     global COLORS
     # 绘制分布曲线
     for i in range(n + 1):
