@@ -21,6 +21,9 @@ if colors is None or colors == []:
     # 蓝 #0000FF
     # 紫 #8B00FF
     colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#00FFFF', '#0000FF', '#8B00FF']
+# x 轴和 y 轴的刻度以及间距 [min, max, ticked]
+xlim = [-10, 10, 2]
+ylim = [-30, 40, 10]
 
 # 读取 Multiwfn 生成的 NICS-1D-all、sigma、pi 的数据
 # 如果需要修改，请修改 NICS_1D_pi.txt、NICS_1D_sigma.txt 以及 NICS_1D_all.txt
@@ -47,14 +50,14 @@ rc['xtick.minor.size'] = 2.5
 fig, ax = pplt.subplots(figsize=(5.4 * 0.9, 4 * 0.9))
 
 # 绘制整体贡献的 NICS 曲线
-ax.plot(nics_all.iloc[:, -2], nics_all.iloc[:, -1], label='total', linewidth=1.2, color=colors[0])
+ax.plot(nics_all.iloc[:, -2], nics_all.iloc[:, -1], label='total', linewidth=1.3, color=colors[0])
 # 绘制 sigma 体系贡献的 NICS 曲线
-ax.plot(nics_sigma.iloc[:, -2], nics_sigma.iloc[:, -1], label='sigma', linewidth=1.2, color=colors[1])
+ax.plot(nics_sigma.iloc[:, -2], nics_sigma.iloc[:, -1], label='sigma', linewidth=1.3, color=colors[1])
 # 绘制 pi 体系贡献的 NICS 曲线
-ax.plot(nics_pi.iloc[:, -2], nics_pi.iloc[:, -1], label='pi', linewidth=1.2, color=colors[2])
+ax.plot(nics_pi.iloc[:, -2], nics_pi.iloc[:, -1], label='pi', linewidth=1.3, color=colors[2])
 
 # 在 y=0 处绘制一条虚线
-ax_line = ax.axhline(y=0, color='black', linewidth=1.2)
+ax_line = ax.axhline(y=0, color='black', linewidth=1.3)
 # 设置为最底层
 ax_line.set_zorder(0)
 
@@ -64,7 +67,8 @@ ax.legend(loc='ur', ncols=1, fontweight='bold', fontsize='12.5', frame=False, bb
 # 格式化图像
 fig.format(
     grid=False, ylabel='Shielding (in ppm)', xlabel='Position (in Å)',
-    xlim=(-10, 10), xminorlocator=1, xlocator=2, ylim=(-30, 40), yminorlocator=5, ylocator=10
+    xlim=(xlim[0], xlim[1]), xminorlocator=(xlim[2] / 2), xlocator=xlim[2], ylim=(ylim[0], ylim[1]),
+    yminorlocator=(ylim[2] / 2), ylocator=ylim[2]
 )
 
 # 显示图像
