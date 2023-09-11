@@ -5,7 +5,6 @@ import proplot as pplt
 from proplot import rc
 from scipy import interpolate
 
-from utils.auto import auto_lim
 
 # 标题、x 和 y 轴 label
 # 可以直接在 txt 中读取，也可以自行配置
@@ -76,12 +75,6 @@ yNew = f(xNew)
 ax.plot(xNew, yNew, color=colors[0], linewidth=1.3, zorder=1)
 # 绘制实际的点
 ax.scatter(data['X'], data['Y'], color=colors[1], zorder=2, edgecolor='black')
-
-# 如果 ylim 和 xlim 为 None 或空，则调用自动生成坐标轴刻度
-if ylim is None or ylim == []:
-    ylim = auto_lim(data['Y'].max(), data['Y'].min())
-if xlim is None or xlim == []:
-    xlim = auto_lim(data['X'].max(), data['X'].min())
 
 # 格式化图像
 fig.format(
